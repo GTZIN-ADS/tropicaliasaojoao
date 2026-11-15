@@ -1,0 +1,6 @@
+{
+  "name": "Tropicália Açaí",
+  "description": "Sistema completo de delivery da Tropicália Açaí com cardápio digital, montador passo a passo, pagamento Pix com comprovante, acompanhamento em tempo real e painel administrativo.",
+  "requestFramePermissions": ["geolocation"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

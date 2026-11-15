@@ -1,0 +1,257 @@
+Crie o sistema completo de delivery da TROPICÁLIA AÇAÍ: um cardápio digital premium, com carrinho, checkout, pagamento por Pix com comprovante, acompanhamento do pedido em tempo real para o cliente e um painel administrativo profissional para a loja. O resultado deve parecer o app de uma marca consolidada, nunca um template ou um site gerado automaticamente. O visual é tropical, vibrante, alegre e acolhedor, com identidade própria. Tudo deve funcionar de verdade, sem telas quebradas e sem dados falsos. Esta é uma loja real com mais de 3 anos de existência.
+
+========================================
+0. FUNCIONAMENTO ESSENCIAL (comportamento obrigatório)
+========================================
+Use banco de dados com atualização em tempo real (Supabase/Lovable Cloud), armazenamento de imagens e login seguro para o painel. Não explique a arquitetura, apenas garanta que estes comportamentos funcionem:
+
+- O cliente monta o pedido, faz o checkout e o pedido aparece NA HORA no painel da loja, sem recarregar a página, com alerta sonoro e visual.
+- Quando a loja muda o status do pedido, a tela do cliente atualiza sozinha, ao vivo, com animação e mensagem de status.
+- Tudo que o dono alterar no painel (preço, nome, foto, produto novo, item esgotado, loja aberta/fechada, taxa) reflete no cardápio do cliente em tempo real, sem precisar atualizar a página.
+- Fotos dos produtos, banners e logo são enviados pelo painel (upload) e substituídos a qualquer momento.
+- Comprovantes de Pix são enviados pelo cliente (foto ou PDF) e visualizados no painel.
+- O painel exige login (e-mail e senha) e tem dois perfis: DONO (acesso total) e ATENDENTE (pedidos, marcar item como esgotado e abrir/fechar a loja; sem preços, configurações e relatórios financeiros).
+- O cliente se identifica apenas com NOME e WHATSAPP, sem criar conta, e vê o histórico dos próprios pedidos. Ele só pode acessar os pedidos que ele mesmo fez, nunca os de outras pessoas.
+- Trate erros com elegância: mensagens amigáveis, estados de carregamento com skeleton animado, reconexão automática do tempo real e nenhuma tela em branco.
+
+========================================
+1. DIREÇÃO CRIATIVA
+========================================
+Conceito: "A feira tropical premium". Pense em uma mistura de vitrine de açaiteria artesanal, selva tropical estilizada e app moderno de delivery. É alegre, colorido e acolhedor (tom caseiro, feito com carinho), mas com acabamento de marca premium: espaçamentos generosos, tipografia expressiva, sombras suaves, brilhos controlados e movimento fluido.
+
+Sensação: fome imediata, alegria, calor humano, confiança e praticidade. O cliente deve sentir "quero montar o meu agora".
+
+Personalidade visual: roxo/uva profundo como base rica, amarelo-mostarda como energia e destaque, folhas de palmeira estilizadas nos cantos e bordas, gotas e respingos de calda (a identidade dos materiais da marca tem "pingos" de calda roxa escorrendo no topo, use isso como elemento assinatura, por exemplo no topo do hero e em divisores de seção), frutas e ingredientes como elementos decorativos.
+
+Hierarquia: o AÇAÍ MONTÁVEL é a estrela absoluta. Ele aparece em destaque máximo, com seção própria grande e chamativa. Todas as outras categorias (sorvetes, paletas, hamburgueria, bebidas, salada de frutas) entram em segundo plano, com cards menores e mais compactos.
+
+Evitar completamente: aparência de template, muito texto, poluição visual, cores frias (azul/cinza), seções repetitivas, cards idênticos em sequência sem variação de ritmo, animações infantis, lentidão ou animações que atrapalham o pedido.
+
+========================================
+2. DESIGN SYSTEM
+========================================
+Cores:
+- Uva profundo (fundo escuro principal): #2E0A3A
+- Roxo açaí (superfícies e blocos): #4A1259
+- Roxo médio (cards elevados): #62207A
+- Amarelo-mostarda (CTA e destaque principal): #F7B518
+- Amarelo claro (hover/brilho): #FFD45C
+- Creme (texto sobre escuro e fundos claros de respiro): #FFF4DC
+- Rosa-mauve (detalhes, etiquetas e tags, herdado dos cardápios da marca): #D58BAE
+- Verde-palmeira (somente ilustrações de folhas e selo de "aberto"): #2F6B3D
+- Texto principal sobre escuro: creme; secundário: creme com 70% de opacidade
+- Estados de erro: coral #FF6B5E. Sucesso: verde #3DDC84.
+Alterne seções escuras (uva) com seções de respiro em creme ou amarelo suave para criar ritmo. Gradientes: sempre de roxo para roxo mais profundo, ou amarelo para laranja-dourado em botões, com propósito e sutileza.
+
+Tipografia:
+- Títulos de impacto: "Baloo 2" ExtraBold ou "Lilita One" (arredondada, alegre), tamanho fluido de 40 a 72px no desktop e 32 a 44px no mobile, line-height 1.05, letter-spacing levemente negativo.
+- Destaques manuscritos (frases como "Uma delícia da casa"): "Pacifico" ou "Caveat Brush", usados com moderação.
+- Corpo e interface: "Nunito" 400/600/700, 15 a 17px, line-height 1.5.
+- Preços: Baloo 2 Bold, em amarelo-mostarda, com "R$" menor e elevado.
+- CTA: Baloo 2 SemiBold, caixa normal, 16 a 18px.
+
+Componentes: cantos bem arredondados (20 a 28px), botões em formato de pílula, sombras coloridas (roxo escuro difuso, e brilho amarelo no hover dos CTAs), chips de seleção com estados claros, ícones de linha consistentes, badges "NOVO", "MAIS PEDIDO" e "PROMO" em formato de etiqueta/fita como nos cardápios da marca.
+
+========================================
+3. ESTRUTURA DA EXPERIÊNCIA DO CLIENTE
+========================================
+Uma única jornada fluida (cardápio, carrinho, checkout, Pix, acompanhamento), com transições suaves entre as etapas e sem recarregar a página.
+
+Barra superior fixa (sticky): logo Tropicália Açaí, indicador "ABERTO AGORA / FECHADO" (com pulso verde quando aberto), tempo estimado "20 a 30 min", taxa de entrega e botão do carrinho com contador que "pula" quando um item é adicionado. Quando fechada, a loja mostra um aviso elegante e bloqueia o envio do pedido, mas permite ver o cardápio. Abertura e fechamento seguem o horário automático configurado no painel, com botão manual de exceção.
+
+Navegação de categorias: barra horizontal sticky com chips, rolagem suave e destaque da categoria ativa conforme o scroll (scrollspy). Ordem: Açaí Montável, Dose Dupla, Tigelinhas Especiais, Copinhos em Camadas, Sorvete de Creme, Paletas, Salada de Frutas, Milk Shakes, Drinks, Hamburgueria (hambúrgueres, batatas, adicionais e bebidas).
+
+========================================
+4. HERO (primeira dobra)
+========================================
+Fundo uva profundo com a "calda" roxa escorrendo no topo (animação de gotas descendo uma vez ao carregar), folhas de palmeira em parallax nos cantos que balançam suavemente, e partículas de brilho dourado sutis.
+
+Composição: texto à esquerda e, à direita, uma tigela de açaí grande e deliciosa (use a foto real do produto enviada pelo dono, recortada ou em moldura circular com borda amarela; se ainda não houver, deixe um espaço elegante com a tigela ilustrada), com frutas (morango, banana, kiwi) e ingredientes flutuando ao redor em profundidades diferentes, reagindo levemente ao movimento do mouse (no mobile, ao giroscópio ou ao scroll).
+
+Headline (com revelação palavra por palavra): "Monte o seu açaí do jeito que você ama."
+Subheadline: "Escolha cada camada, acompanhe o pedido ao vivo e receba em casa em 20 a 30 minutos."
+CTA principal (botão amarelo, magnético, com brilho no hover e seta que desliza): "Montar meu açaí". CTA secundário discreto: "Ver cardápio completo".
+Abaixo do CTA, três mini-selos com ícone: "Mais de 3 anos de sabor", "Acompanhe seu pedido ao vivo" e "Pague com Pix".
+Se houver vídeo curto do produto enviado, use-o como fundo em loop, mudo, escurecido pelo gradiente roxo e com poster otimizado.
+A primeira dobra deve ser leve e carregar rápido.
+
+========================================
+5. SEÇÃO ESTRELA: AÇAÍ MONTÁVEL (montador passo a passo)
+========================================
+É a experiência mais importante do site. Abre em tela cheia/painel amplo no desktop (duas colunas) e em tela cheia no mobile (bottom sheet grande).
+
+Layout desktop: à esquerda, a TIGELA/COPO ANIMADO que se monta ao vivo conforme o cliente escolhe (cada escolha faz o ingrediente "cair" dentro da tigela com leve quicar e respingo); à direita, as etapas. No mobile: tigela compacta fixa no topo e etapas abaixo, com barra de progresso.
+
+Barra de progresso com etapas: Tamanho, Açaí, Creme, Calda, Fruta, Grão, Adicionais, Resumo. Cada etapa mostra "escolha X de Y" com contador animado. Ao atingir o limite, o contador vira check verde com micro-vibração. Ao tentar passar do limite, o item extra é permitido COM cobrança de adicional e o preço sobe com animação de contagem. Avise claramente: "+ R$ 3,00 por calda/fruta adicional".
+
+Regras do montador:
+- Tamanho: Tigela P R$16, M R$20, G R$25. Copo 250ml R$12, 300ml R$14, 400ml R$17, 500ml R$20.
+- Já acompanha (padrão): leite em pó, 1 calda, 1 grão, 1 fruta e 1 creme (opcional).
+- Etapa 1, tipo de açaí (escolher 1): Açaí, Açaí com morango, Açaí com banana.
+- Etapa 2, creme (escolher 1, opcional): Cupuaçu, Ninho, Ninho com Nutella.
+- Etapa 3, calda (1 inclusa, adicional R$3,00 cada extra): Leite condensado, Mel de engenho, Calda de morango, Calda frutas vermelhas, Calda de chocolate, Calda de doce de leite, Calda de caramelo, Calda de maracujá, Calda de limão, Calda de menta, Calda de kiwi, Calda de açaí, Calda de uva, Calda de amora.
+- Etapa 4, fruta (1 inclusa, adicional R$3,00 cada extra): Banana, Morango, Kiwi, Uva, Maçã.
+- Etapa 5, grão (escolher 1): Granola, Sucrilhos, Cereal de chocolate.
+- Etapa 6, adicionais (múltiplos, com contador +/-): os itens listados na seção "Adicionais de açaí" abaixo.
+- Resumo final: lista visual do que foi montado, campo "Observações do item", quantidade e botão "Adicionar ao carrinho" que faz a tigela "voar" até o ícone do carrinho.
+Cada opção é um card/chip grande com foto ou ícone do ingrediente (imagem enviada pelo dono, quando existir), estado selecionado com borda amarela, brilho e check animado. Cada etapa pode ser pulada quando opcional.
+
+Itens fixos "Dose Dupla" (aparece como oferta especial com fita vermelha "OFERTA ESPECIAL" e o slogan "Uma delícia da casa, agora em dose dupla!"):
+- Copo Tropical 700ml, R$29,99: leite em pó, 1 calda, 1 grão, 2 frutas, 1 creme (opcional).
+- Tigela Tropical GG, R$39,99: leite em pó, 1 calda, 1 grão, 3 frutas, 1 creme (opcional).
+- Caldas disponíveis na Dose Dupla: Leite condensado, Morango, Frutas vermelhas, Chocolate, Doce de leite, Caramelo, Maracujá. Use o mesmo montador, com os limites acima e adicional de R$3,00 por calda ou fruta extra.
+
+========================================
+6. DEMAIS CATEGORIAS (segundo plano, cards compactos)
+========================================
+Cada produto aparece em card com foto real, nome, descrição curta, preço em destaque e botão "+" animado. Alterne layouts para evitar monotonia: carrossel horizontal para Tigelinhas e Copinhos, grade em mosaico para Sorvetes e Paletas, lista elegante para Hamburgueria, com destaque para itens campeões. Produtos com opções (tamanho, sabor, cobertura) abrem uma folha lateral/bottom sheet com escolhas.
+
+TIGELINHAS ESPECIAIS (todas com açaí, leite em pó e leite condensado):
+Zone R$14 (bolinhas crocantes, farinha láctea) | Kids R$15 (neston, mini disquete, canudinho) | Fantástico R$15 (negresco, ovomaltine, bombom) | Energética R$14 (paçoca, amendoim) | Malibu R$14 (granola, farinha de amendoim).
+
+COPINHOS EM CAMADAS ("Cada camada, uma nova surpresa de sabor!", 3 camadas de recheio):
+Rei Paçoca R$15 (açaí, paçoca, amendoim granulado, sucrilhos, leite em pó, leite condensado) | Chocolatudo R$17 (açaí, ovomaltine, gotas de chocolate, cereal de chocolate, Nutella, leite em pó, leite condensado) | Supremo R$15 (açaí, farinha láctea, neston, bolinhas crocantes, leite em pó, leite condensado) | Ninho Splash R$15 (açaí, creme ninho, leite em pó ninho, leite condensado).
+
+SORVETE DE CREME ("Sabor, cremosidade e frescor em cada colherada!"):
+Cestinha cascão R$1 | 1 bola R$6 | 2 bolas R$10 | Pote 500ml R$20 | Pote 1000ml R$38. O cliente escolhe sabor(es) e 1 cobertura.
+Sabores: Coco, Prestígio, Tapioca, Ouro Branco, Flocos, Óreo, Ninho, Ninho com Nutella, Ninho Trufado, Frutas Vermelhas, Mousse de Limão, Pitaya, Delícia de Abacaxi, Abacaxi ao Vinho, Nata Goiaba, Ovomaltine, Diamante Negro, Chocolate Belga, Sensação, Chambinho, Cupuaçu, Morango Trufado, Morango do Amor, Baunilha, Chocolate Charge, Amarena, Crocante, Açaí com Cupuaçu, Mousse de Maracujá, Ninho com Maracujá, Ninho com Morango, Iogurte Grego, Delícia de Morango, Delícia Trufado, Romeu e Julieta, Pistache, Chocolate, Cocada, Sedução, Morango, Mocaccino, Toffe, Napolitano, Amendoim.
+Coberturas (escolher 1): Morango, Frutas vermelhas, Amora, Uva, Caramelo, Doce de leite, Leite condensado, Chocolate, Açaí, Kiwi, Limão, Menta, Blue, Tati Fruti, Banana, Chiclete.
+Adicionais do sorvete: Nutella R$4, Creme de ovomaltine R$4, Pasta de amendoim R$2, Bolinhas crocantes R$2, Mini disquete R$3, M&M's R$4, Ovomaltine R$3, Ovomaltine rocks R$4, Marshmallow R$2, Leite condensado R$3, Bombom R$3, Bis R$2, Kit Kat R$4, Batom Garoto R$3, Paçoca R$2, Gotas de chocolate R$2, Bananinha R$3, Dentadura R$3, Beijo R$3, Creme de pistache R$3, Jujuba R$2, Flocos de arroz R$2, Canudinho R$2, Cereja R$3, Morango R$3, Uva R$3, Kiwi R$3.
+
+PALETAS: de frutas R$5 (Cajá, Goiaba, Graviola, Maracujá, Abacaxi com hortelã) | cremosas R$7 (Ameixa, Amendoim, Chocolate, Coco, Flocos, Morango) | recheadas R$8 (Morango com leite condensado, Nata goiaba, Delícia de abacaxi, Coco com doce de leite, Chocolate com menta, Chocolate com leite condensado, Açaí com leite condensado, Doce de leite, Chocotigio, Ninho com Nutella, Mousse de limão).
+
+SALADA DE FRUTAS 300ml R$12,50: calda de leite condensado ou de maracujá (NOVO). Acrescente: Granola R$2, Farinha láctea R$2, Mel de engenho R$2, Leite condensado R$3, Leite condensado zero lactose R$3, Cobertura de morango R$3, Cobertura de chocolate R$3, Neston R$2, Leite em pó R$2, Adicional de fruta R$3.
+
+MILK SHAKE 400ml R$16: Doce de leite com amendoim, Negresco com ovomaltine, Açaí com cupuaçu, Paçoca, Ninho, Nutella, Cupuaçu, Morango.
+
+DRINKS 400ml R$20 ("Um toque de arte em cada copo"): Nevada de morango, Espanhola, Limonada cremosa, Aperol tropical, Licor de doce de leite. Nos drinks com álcool, exiba o aviso discreto "Venda proibida para menores de 18 anos".
+
+HAMBURGUERIA (artesanais):
+X-Simples R$14 (pão, hambúrguer artesanal 100g, queijo prato, tomate, alface, cebola) | X-Egg R$15 (100g, queijo prato, ovo com bacon, tomate, alface, cebola) | X-Salada R$17 (100g, queijo prato, presunto, ovo, tomate, alface, cebola) | X-Calabresa R$22 (150g, queijo prato, calabresa, ovo, tomate, alface, cebola) | X-Bacon R$22 (150g, queijo prato, bacon, creme cheddar, tomate, alface, cebola) | X-Tudo R$30 (150g, queijo prato, presunto, ovo, bacon, calabresa, creme cheddar, tomate, alface, cebola).
+Adicionais: Ovo R$2, Presunto R$2, Queijo R$3, Queijo cheddar R$3, Calabresa R$3, Bacon R$3, Creme cheddar R$2, Carne artesanal 150g R$8, Carne artesanal 100g R$5.
+Bebidas: Água R$2, Água com gás R$3, Coca-Cola lata R$5, Fanta lata R$5, Guaraná Antártica lata R$5.
+
+BATATAS FRITAS (P / M / G):
+Simples 7/9/11 | Temperada (páprica defumada) 7/9/11 | Com anéis de cebola 9/13/16 | Com cheddar e bacon 12/16/20 | Com bacon e calabresa 15/19/23 | Suprema (cheddar, calabresa e bacon) 18/22/26 | Overdose de Batata, a mais completa da casa (batatinhas carinha, anéis de cebola, cheddar, bacon e calabresa; toque final temperada com páprica defumada ou só sal) 21/25/30 | Sertaneja (iscas de carne de sol acebolada) 15/20/25.
+Turbine sua batata: Anéis de cebola R$5, Calabresa R$5, Bacon crocante R$5, Iscas de carne de sol R$7, Batatinhas carinha divertidas R$5.
+
+ADICIONAIS DE AÇAÍ (todos editáveis no painel):
+Amendoim 2 | Amendoim granulado 2 | Bananinha fini 3 | Batom Garoto 3 | Bis 2 | Bolinhas crocantes 2 | Bombom 3 | Canudinho 2 | Castanha em grãos 3 | Cereal de chocolate 2 | Creme de ovomaltine 3 | Creme de pistache 4 | Dentadura fini 3 | Farinha de amendoim 2 | Farinha de paçoca 2 | Farinha láctea 2 | Flocos de arroz 2 | Gotas de biscoito Oreo 3 | Gotas de chocolate 2 | Gotas de chocolate branco 2 | Granola 2 | Jujuba 2 | Jujuba ácida 3 | Kit Kat 4 | Leite em pó 2 | Leite em pó Ninho 3 | M&M's 4 | Marshmallow 2 | Mini biscoito Oreo 3 | Mini disquete 3 | Negresco triturado 2 | Neston 2 | Nutella 4 | Ovomaltine 3 | Ovomaltine rocks 4 | Pasta de amendoim 2 | Sucrilhos 2.
+
+Cadastre todo este cardápio já pronto no sistema (com preços e opções), de forma que o dono possa editar tudo depois pelo painel. Onde houver foto real enviada pelo dono, use-a no produto correspondente; onde não houver, use um espaço elegante de imagem com ilustração de marca, sem inventar fotos falsas.
+
+========================================
+7. CARRINHO E CHECKOUT
+========================================
+Carrinho: gaveta lateral (desktop) e bottom sheet (mobile) com itens detalhados (cada ingrediente montado aparece legível), edição de quantidade com micro-animação, remoção por deslize, subtotal, taxa de entrega fixa para a cidade (valor definido no painel), total com contagem animada e CTA amarelo "Finalizar pedido". Não há pedido mínimo.
+
+Checkout em etapas curtas, com barra de progresso:
+1. Dados: Nome e WhatsApp (máscara brasileira). Os dados ficam salvos no aparelho para os próximos pedidos.
+2. Entrega ou retirada: escolha animada entre "Receber em casa" e "Retirar no balcão". Na entrega: rua, número, bairro e ponto de referência, mais o botão "Usar minha localização" (GPS) com animação de radar e preenchimento automático quando possível. Na retirada, mostre o endereço da loja (definido no painel).
+3. Pagamento: três opções em cards grandes: Pix, Cartão na entrega (crédito/débito) e Dinheiro (com campo "Troco para quanto?" e opção "Não preciso de troco").
+4. Revisão e confirmação.
+
+PIX (experiência de destaque):
+- Ao escolher Pix e confirmar, mostre uma tela de pagamento com o valor total em destaque, o QR Code gerado com o valor do pedido, e a chave Pix (telefone) (87) 98148-3783.
+- Botão "Copiar chave Pix" e botão "Copiar Pix copia e cola" com microanimação deliciosa: ao clicar, o botão se transforma (ícone de copiar vira check), solta confete/brilho amarelo, vibra levemente no celular e mostra o toast "Copiado! Agora é só pagar no seu banco". Gere o código Pix copia e cola válido com o valor do pedido.
+- Contador de espera elegante e instrução em 3 passos ilustrados: Copie, Pague no app do banco, Envie o comprovante.
+- Área "Enviar comprovante": caixa de arrastar e soltar (e câmera/galeria no mobile) com pré-visualização, barra de progresso animada do upload e confirmação visual "Comprovante enviado! A loja já vai conferir".
+- O pedido só segue para preparo depois que o atendente confirmar o pagamento no painel. Enquanto isso, o cliente vê o status "Aguardando confirmação da loja".
+- Para cartão e dinheiro na entrega, o pedido vai direto para a loja aguardando confirmação, sem comprovante.
+
+========================================
+8. ACOMPANHAMENTO DO PEDIDO EM TEMPO REAL (cliente)
+========================================
+Tela dedicada, aberta automaticamente após o pedido e acessível depois pelo botão "Meus pedidos" (histórico com nome e WhatsApp do cliente).
+
+Linha do tempo animada na vertical (mobile) e horizontal (desktop), com uma tigela/ícone que avança pelo caminho conforme o status muda, e cada etapa acende com brilho amarelo e check:
+1. Aguardando confirmação da loja (com animação de relógio suave e a mensagem "Já recebemos seu pedido! A loja está conferindo")
+2. Em preparo ("Estamos preparando seu pedido com carinho", com animação de tigela sendo montada/colher mexendo)
+3. Pronto ("Seu pedido está pronto!", ou "Pronto para retirar" quando for retirada)
+4. Saiu para entrega ("Seu pedido está a caminho!", com animação de moto percorrendo uma linha)
+5. Entregue (celebração leve com confete)
+Também existe o estado Cancelado/Recusado, com o motivo informado pela loja e tom gentil (sem vermelho agressivo).
+A cada mudança de status em tempo real, a tela atualiza sozinha com transição suave, toast no topo, vibração curta e som discreto opcional. Mostre também o resumo do pedido, o horário e a estimativa "20 a 30 min". Botão "Falar com a loja" abre o WhatsApp (87) 98148-3783. Se o Pix ainda não foi enviado, mantenha o botão de enviar comprovante visível.
+
+========================================
+9. PAINEL ADMINISTRATIVO (rota /admin, visual próprio e profissional)
+========================================
+Mesma identidade (roxo/amarelo), porém mais limpa e funcional, otimizada para tablet e celular além do desktop. Menu lateral colapsável no desktop e barra inferior no mobile.
+
+Login elegante com e-mail e senha, logo animada e mensagem de erro amigável.
+
+PEDIDOS (tela principal, em tempo real):
+- Quadro tipo Kanban com colunas: Novos / Aguardando pagamento, Em preparo, Prontos, Saiu para entrega, Finalizados. No mobile, vira abas com contadores.
+- Novo pedido: o card entra com animação de destaque pulsante, toca um alerta sonoro (com botão para ativar/desativar o som e um aviso na primeira vez para liberar o áudio do navegador) e o contador da aba aumenta.
+- Cada card mostra: número do pedido, nome, WhatsApp (clique abre conversa), itens com todas as escolhas do montador, observações, forma de pagamento (com troco quando houver), tipo (entrega ou retirada), endereço com link para o mapa, total, horário e tempo decorrido com cor que esquenta (verde, amarelo, vermelho suave) se demorar.
+- Ações com um toque: Aceitar e iniciar preparo, Recusar (com motivo rápido selecionável e campo livre), Marcar como pronto, Saiu para entrega, Finalizar. Cada ação atualiza a tela do cliente na hora.
+- Pedidos Pix: botão "Ver comprovante" abre o comprovante em visualizador com zoom, e botão "Confirmar pagamento" libera o preparo.
+- Botão "Imprimir pedido" gera um cupom otimizado para impressora térmica (layout limpo de cozinha, com itens e observações em destaque).
+- Filtros por status, data, forma de pagamento e busca por nome ou número.
+
+CARDÁPIO (gerenciamento total, perfil Dono):
+- Criar, editar, duplicar, reordenar (arrastar e soltar) e excluir categorias e produtos.
+- Editar nome, descrição, preço, foto (upload com recorte e pré-visualização), selo (Novo, Mais pedido, Promo) e disponibilidade.
+- Editor de grupos de opções do montador (etapas, quantidade inclusa, limite, preço do adicional, itens de cada etapa) para que o dono possa mudar qualquer regra sem ajuda técnica.
+- Botão rápido "Esgotado" por item (disponível também para o atendente), que some ou escurece o item no cardápio do cliente instantaneamente.
+- Troca de banners, fotos do hero, logo e imagens da loja.
+
+CONFIGURAÇÕES (Dono): horário de funcionamento por dia da semana (abertura automática) + botão grande "Abrir / Fechar loja agora" para exceções, taxa de entrega fixa, tempo estimado de entrega (padrão 20 a 30 min), endereço da loja para retirada, chave Pix (telefone) e nome/cidade do recebedor para o Pix copia e cola, número de WhatsApp da loja, textos e mensagens de status editáveis, gestão de usuários (dono e atendentes).
+
+RELATÓRIOS (Dono): faturamento do dia, quantidade de pedidos, ticket médio, itens mais vendidos, pedidos por forma de pagamento e gráfico simples por hora, com números animados (contagem), visual limpo e comparativo com o dia anterior.
+
+========================================
+10. ANIMAÇÕES (premium, com propósito)
+========================================
+- Carregamento: logo com folha de palmeira balançando e calda escorrendo; skeletons com brilho percorrendo.
+- Scroll reveal com stagger nos cards (fade + slide curto), sem exagero.
+- Parallax suave nas folhas de palmeira e frutas flutuantes (camadas de profundidade).
+- Text reveal na headline do hero e nos títulos de seção.
+- Botões magnéticos nos CTAs principais, com brilho dourado e sensação de pressão ao clicar.
+- Cards de produto: elevação, leve inclinação 3D seguindo o cursor (desktop) e zoom suave da foto no hover.
+- Adicionar ao carrinho: o item "voa" até o carrinho e o contador pula.
+- Montador do açaí: ingredientes caindo na tigela com física leve, contador por etapa e preço com contagem animada.
+- Copiar Pix: botão transformando-se, confete dourado e vibração.
+- Linha do tempo do pedido: progresso animado, moto percorrendo trajeto, brilho ao avançar etapa.
+- Painel: entrada animada de novo pedido, alerta pulsante, números de relatório com contagem.
+- Marquee suave com frases da marca ("Monte do seu jeito • Cremoso • Feito com carinho • Delivery rápido") como divisor entre seções.
+- Scroll progress fino em amarelo no topo e transições suaves entre telas e etapas.
+- Respeite "prefers-reduced-motion": desligue parallax e movimentos longos, mantendo apenas fades.
+
+========================================
+11. IMAGENS E ASSETS
+========================================
+O dono tem: logo em alta qualidade, fotos de todos os produtos, vídeos curtos dos produtos e fotos da loja e da equipe. Crie slots bem definidos e um fluxo de upload no painel para cada um:
+- Logo: header, favicon, tela de carregamento e rodapé.
+- Fotos de produtos: cards e montador, em proporção 1:1 ou 4:5, com cantos arredondados, leve vinheta roxa e sombra colorida.
+- Vídeos curtos: fundo em loop do hero ou destaque em uma faixa "Veja como é feito", sempre mudos, comprimidos e com carregamento tardio.
+- Fotos da loja e da equipe: uma seção curta e calorosa "Nossa casa, nossa gente" (mais de 3 anos de Tropicália), em colagem assimétrica com molduras arredondadas e leve rotação, reforçando o tom caseiro e a confiança.
+- Ilustrações vetoriais próprias de folhas de palmeira, gotas de calda, frutas e ingredientes como elementos decorativos.
+Nunca invente depoimentos, avaliações, números de clientes ou resultados falsos.
+
+========================================
+12. RESPONSIVIDADE (composição própria por dispositivo)
+========================================
+- Mobile (prioridade, pois a maioria pedirá pelo celular): experiência tipo app, com barra inferior de carrinho sempre visível, botões grandes (mínimo 48px), tipografia fluida, bottom sheets em vez de modais, montador em tela cheia com tigela compacta no topo, polegar alcançando as ações principais, animações leves e adaptadas.
+- Tablet: duas colunas onde fizer sentido, painel administrativo confortável para uso em balcão.
+- Desktop: composições amplas, hero com profundidade, montador em duas colunas, carrinho lateral fixo.
+Nada de versão desktop "encolhida".
+
+========================================
+13. PERFORMANCE E QUALIDADE VISUAL
+========================================
+Fluida, rápida, premium e organizada. Imagens otimizadas com carregamento tardio, animações aceleradas por GPU (transform e opacity), vídeos leves, fontes pré-carregadas, sem layout shift. Prefira sofisticação à poluição visual: poucos elementos competindo, muito respiro, uma ação principal por tela.
+
+========================================
+14. CRITÉRIOS FINAIS DE QUALIDADE (checklist obrigatório)
+========================================
+- O primeiro impacto é tropical, alegre e premium, e não parece template.
+- O açaí montável é a estrela e funciona perfeitamente, com limites, cobrança de adicionais e resumo correto.
+- Um pedido feito no celular aparece no painel em segundos, com som, e cada mudança de status aparece ao vivo no celular do cliente.
+- O fluxo de Pix funciona de ponta a ponta: copiar chave, copiar código copia e cola, QR com valor, envio de comprovante e confirmação no painel antes do preparo.
+- O dono consegue mudar preços, fotos, nomes, categorias, produtos, etapas do montador, horários e abrir/fechar a loja sem ajuda técnica, e tudo reflete no cardápio do cliente em tempo real.
+- Atendente e dono têm permissões distintas.
+- Nenhum erro, tela vazia, botão sem ação ou texto de exemplo (lorem ipsum).
+- Tudo em português do Brasil, com valores formatados em R$ (vírgula decimal) e linguagem acolhedora e caseira.
+- Contato e redes da marca visíveis no rodapé: WhatsApp (87) 98148-3783 e Instagram @tropicaliaa_acai.
+- O resultado transmite carinho, qualidade e confiança, com a energia da marca Tropicália Açaí.
